@@ -50,7 +50,7 @@ def display_dashboard():
 
 
 def display_form():
-    RATING_FORM_URL = 'https://ee.kobotoolbox.org/i/'
+    RATING_FORM_URL = 'https://ee.kobotoolbox.org/single/5e1e80143ad4fc67e50331d68e839312'
 
     st.markdown('###')
     st.info("Fill Out Application Evaluation Form", icon="ℹ️")
