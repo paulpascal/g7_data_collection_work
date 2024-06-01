@@ -15,8 +15,7 @@ class AppPages(Enum):
 
 
 class AppTabs(Enum):
-  FRIDGE_FREEZER   = 'Réfrigérateurs & Congélateurs'
-  AIR_CONDITIONER  = 'Climatisation'
-  COOKER_OVEN      = 'Cuisinières & Fours'
-  WASHING_MACHINE  = 'Machines à laver'
-
+  FRIDGES_FREEZERS  = 'Fridges & Freezers'
+  AIR_CONDITIONERS  = 'Air Conditioners'
+  COOKERS_OVENS     = 'Cookers & Ovens'
+  WASHING_MACHINES  = 'Washing Machines'
