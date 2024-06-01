@@ -1,5 +1,6 @@
 bs4
 numpy
 pandas
+python-dotenv
 seaborn
 streamlit

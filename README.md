@@ -18,7 +18,9 @@ To run this app, follow this steps:
   pip install -r requirements.txt
 ```
 
-2. Run the app:
+2. Set the env variables see [env.example](env.example)
+
+3. Run the app:
 
 ```bash
   streamlit run ./app.py

@@ -1,59 +1,92 @@
+import seaborn as sb
 import streamlit as st
+import matplotlib.pyplot as plt
 import streamlit.components.v1 as components
-from config import CACHE_TTL, AppPages, AppTabs
+
+from config import AppPages, AppTabs
 from utils.load_data_from_bs import scrape_and_clean_data
-from utils.load_data_from_ws import clean_scraped_data, load_scraped_data
+from utils.load_data_from_ws import load_raw_scraped_data, load_cleaned_scraped_data
 
 
-@st.cache_data(ttl=CACHE_TTL, show_spinner="Fetching data...")
 def display_scrape_data(nb_of_pages):
     st.markdown('###')
-    st.info("Scrape data across multiple pages", icon="ℹ️")
-
-    scrape_urls = {
-        AppTabs.FRIDGE_FREEZER:  "https://www.expat-dakar.com/refrigerateurs-congelateurs",
-        AppTabs.AIR_CONDITIONER: "https://www.expat-dakar.com/climatisation",
-        AppTabs.COOKER_OVEN:     "https://www.expat-dakar.com/cuisinieres-fours",
-        AppTabs.WASHING_MACHINE: "https://www.expat-dakar.com/machines-a-laver"
-    }
+    st.info("Scrape data across multiple pages", icon="🚀")
 
     for tab in AppTabs:
         with st.expander(tab.value):
-            # if st.button(f"Scrape {tab.value}"):
-            st.write(f"Scraping {nb_of_pages} pages from {scrape_urls[tab]}")
-            with st.spinner("Scraping data..."):
-                data = scrape_and_clean_data(tab, nb_of_pages)
-            st.dataframe(data)
+            if st.button('Scrape now', key=tab):
+                with st.spinner('Scraping data...'):
+                    df = scrape_and_clean_data(tab, nb_of_pages)
+
+                st.write('Data dimension: ' + str(df.shape[0]) + ' rows and ' + str(df.shape[1]) + ' columns.')
+                st.dataframe(df, use_container_width=True)
 
 
-@st.cache_data(ttl=CACHE_TTL, show_spinner="Fetching data...")
 def display_scraped_data():
     st.markdown('###')
-    st.info("Display already scraped data (not cleaned)", icon="ℹ️")
+    st.info("Display already scraped data (not cleaned)", icon="🗄")
     for tab in AppTabs:
         with st.expander(tab.value):
-            data = load_scraped_data(tab)
-            st.dataframe(data)
+            df = load_raw_scraped_data(tab)
+
+            st.write('Data dimension: ' + str(df.shape[0]) + ' rows and ' + str(df.shape[1]) + ' columns.')
+            st.dataframe(df, use_container_width=True)
 
 
-@st.cache_data(ttl=CACHE_TTL, show_spinner="Fetching data...")
 def display_dashboard():
     st.markdown('###')
-    st.info("Displaying Dashboard", icon="ℹ️")
+    st.info("Displaying Dashboard", icon="📊")
     tab_names = [tab.value for tab in AppTabs]
     tabs = st.tabs(tab_names)
 
     for tab_name, tab in zip(tab_names, AppTabs):
         with tabs[tab_names.index(tab_name)]:
-            clean_scraped_data(tab)
-            st.write(f"Dashboard for {tab.value}")
+            df = load_cleaned_scraped_data(tab)
+            equipment = tab.value
+
+            if not df.empty:
+                # Price variation with equipment status (etat) using strip plot
+                fig, ax = plt.subplots(figsize=(15, 10))
+                sb.stripplot(
+                    x='etat', y='prix', hue='etat',
+                    data=df, ax=ax, palette="Set2",
+                    jitter=True, dodge=True, alpha=0.7, legend=False
+                )
+                ax.set_title(f'Price variation with {equipment} status')
+                st.pyplot(fig)
+
+                # Bar plot for average price by equipment status
+                fig, ax = plt.subplots(figsize=(15, 10))
+                avg_price = df.groupby('etat')['prix'].mean().reset_index()
+                sb.barplot(
+                    x='etat', y='prix',
+                    hue='prix', data=avg_price,
+                    ax=ax, palette="Set3", legend=False
+                )
+                ax.set_title(f'Average price by {equipment} Status')
+                st.pyplot(fig)
+
+                # Top addresses where new cars are found (adresse and etat='Neuf')
+                new_cars = df[df['etat'].str.lower() == 'neuf']
+                top_new_places = new_cars['adresse'].value_counts().head(5).reset_index()
+                top_new_places.columns = ['adresse', 'count']
+                fig, ax = plt.subplots(figsize=(15, 10))
+                sb.barplot(
+                    x='count', y='adresse', ax=ax,
+                    hue='adresse', data=top_new_places,
+                    palette=sb.color_palette("coolwarm", len(top_new_places)), legend=False
+                )
+                ax.set_title(f'Top places where new {equipment} are found')
+                st.pyplot(fig)
+            else:
+                st.caption("😔 No data available currently for this tab.")
 
 
 def display_form():
-    RATING_FORM_URL = 'https://ee.kobotoolbox.org/i/'
+    RATING_FORM_URL = 'https://ee.kobotoolbox.org/single/5e1e80143ad4fc67e50331d68e839312'
 
     st.markdown('###')
-    st.info("Fill Out Application Evaluation Form", icon="ℹ️")
+    st.info("Fill Out Application Evaluation Form", icon="📋")
     components.html(
         f"""
         <iframe src="{RATING_FORM_URL}" width="800" height="1100"></iframe>
@@ -65,14 +98,15 @@ def display_form():
 
 
 def main():
-    title       = 'G7 Data Scraper App'
+    title       = 'G7 DATA SCRAPER APP'
     nb_of_pages = 1
 
     st.set_page_config(
-        page_title=title,
-        page_icon=":chart_with_upwards_trend:"
+        page_title='G7 DATA SCRAPER APP',
+        page_icon=":chart_with_upwards_trend:",
+        # layout="wide"
     )
-    st.title(title)
+    st.title(f':chart_with_upwards_trend: :orange[{title}]')
 
     with st.sidebar:
         st.header("Configuration")
