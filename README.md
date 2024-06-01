@@ -20,6 +20,8 @@ To run this app, follow this steps:
 
 2. Set the env variables see [env.example](env.example)
 
+These is very useful, since the allow us to bypass website protection using proxy.
+
 3. Run the app:
 
 ```bash
@@ -34,9 +36,9 @@ To run this app, follow this steps:
     alt="Streamlit logo" height="16">&nbsp by:
 </h6>
 <ul>
-  <li><a href="https://github.com/paulpascal">@paulpascal</a></li>
-  <li><a href="https://github.com/gbadabizo">@gbadabizo</a></li>
-  <li><a href="https://github.com/abdelaziz2016">@Abdelaziz</a></li>
+  <li><a href="mailto:paul.alogno@gmail.com">Paul ALOGNON-ANANI</a></li>
+  <li><a href="mailto:edemgbadabizo@gmail.com">Edem GBADABIZO</a></li>
+  <li><a href="mailto:abdelazizbinsaleh@gmail.com">Abdel Aziz Hissein Ali</a></li>
   <li><a href="mailto:moulopautboussenguithibauld@gmail.com
-">@thibauld</a></li>
+">Thibault MOULOPAUT BOUSSENGUI</a></li>
 </ul>
